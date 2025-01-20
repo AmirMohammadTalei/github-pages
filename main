@@ -1,0 +1,37 @@
+import speech_recognition as sr
+from docx import Document
+import os
+import pyttsx3
+from tkinter import *
+i = Tk()
+
+reco = sr.Recognizer()
+engine = pyttsx3.init()
+def speech_to_text():
+    with sr.Microphone() as source:
+        Label(i,text="please speak...").pack()
+        reco.adjust_for_ambient_noise(source)
+        audio = reco.listen(source)
+        try:
+            Label(i,text="loading.").pack()
+            text=reco.recognize_google(audio,language="en-US")
+            Label(i,text="are you speak:"+text).pack()
+            return text
+        except sr.UnknownValueError:
+            Label(i,text="I didn't understand.").pack()
+            return
+        except sr.RequestError as e:
+               Label(i,text=f"you has been: ").pack()
+               return
+def save_to_word(text):
+        doc = Document()
+        doc.add_paragraph(text)
+        doc.save("output")
+        print("file save")    
+def main():
+        text = speech_to_text()
+        if text:
+            save_to_word()
+main()
+Button(i,text="speak...",bg="gray",bd=20,width=10,command=speech_to_text).pack()
+i.mainloop()
